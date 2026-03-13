@@ -4,6 +4,15 @@ import { AppState, UserOrdersVm, User, Order, UserTotalOrdersVm } from '@fmr/use
 import { UsersActions } from '../+state/users.actions';
 import { UsersSelectors } from '../+state/users.selectors';
 
+/**
+ * UsersFacade
+ *
+ * Encapsulates all interaction with the NgRx store and side effects.
+ * UI components depend only on Angular Signals exposed here and remain
+ * completely unaware of NgRx implementation details.
+ *
+ * This keeps components simple, testable, and decoupled from state management.
+ */
 @Injectable({ providedIn: 'root' })
 export class UsersFacade {
   private store: Store<AppState> = inject(Store<AppState>);
@@ -32,15 +41,27 @@ export class UsersFacade {
     error: this.$error()
   }));
 
-  // load all current users
+  /**
+   * Loads users if they are not already present in the store.
+   * Prevents redundant API requests by using cached state when available.
+   */
   loadUsers() {
-    this.store.dispatch(UsersActions.loadUsers());
+    const users = this.$users();
+
+    if (!users || users.length === 0) {
+      this.store.dispatch(UsersActions.loadUsers());
+    }
   }
 
-  // SELECT USER + caching
+  /**
+   * Select a user and load their orders if they are not already cached
+   * @param userId
+   */
   selectUser(userId: number) {
     this.store.dispatch(UsersActions.selectUser({ userId }));
 
+    //Avoid redundant API calls by checking if orders already exist in the store.
+    //If orders are already loaded for the selected user we reuse the cached state.
     const orders = this.$selectedUserOrders();
     if (!orders || orders.length === 0) {
       this.store.dispatch(UsersActions.loadUserOrders({ userId }));

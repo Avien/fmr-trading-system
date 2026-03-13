@@ -79,6 +79,30 @@ describe('UsersFacade', () => {
     });
   });
 
+  describe('loadUsers & Caching Logic', () => {
+    it('should dispatch loadUsers when $users is empty', () => {
+      store.overrideSelector(UsersSelectors.selectAllUsers, []);
+      store.refreshState();
+
+      facade.loadUsers();
+
+      expect(store.dispatch).toHaveBeenCalledWith(UsersActions.loadUsers());
+    });
+
+    it('should NOT dispatch loadUsers when $users already has data (Cache Hit)', () => {
+      const mockUsers: User[] = [
+        { id: 1, name: 'Avi Cohen', email: 'avi@test.com', city: 'Tel Aviv' }
+      ];
+
+      store.overrideSelector(UsersSelectors.selectAllUsers, mockUsers);
+      store.refreshState();
+
+      facade.loadUsers();
+
+      expect(store.dispatch).not.toHaveBeenCalledWith(UsersActions.loadUsers());
+    });
+  });
+
   describe('selectUser & Caching Logic', () => {
     it('should dispatch selectUser AND loadUserOrders when $selectedUserOrders is empty', () => {
       facade.selectUser(1);

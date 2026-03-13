@@ -1,81 +1,266 @@
-# FmrTradingSystem
+[//]: # (# FMR Trading System 📈)
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+[//]: # ()
+[//]: # (A modern, scalable frontend architecture built for the FMR assignment.)
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+[//]: # ()
+[//]: # (**🚀 Live Demo:** https://fmr-trading-system.vercel.app/)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+[//]: # ()
+[//]: # (## 📦 Project Overview)
 
-## Finish your CI setup
+[//]: # ()
+[//]: # (This application demonstrates a scalable Angular architecture using Nx, NgRx, and Angular Signals.)
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/03xCZb6qm0)
+[//]: # ()
+[//]: # (The UI displays a list of users and their associated orders. Selecting a user loads their orders while leveraging NgRx state caching to avoid unnecessary network requests.)
 
-## Run tasks
+[//]: # ()
+[//]: # (The project focuses on clean architectural boundaries, reactive state management, and modern Angular best practices.)
 
-To run the dev server for your app, use:
+[//]: # ()
+[//]: # (## 🏗 Architectural Highlights)
 
-```sh
-npx nx serve users-portal
+[//]: # ()
+[//]: # (* **Nx Monorepo:** Structured the application with strict boundaries between the App Shell &#40;`users-portal`&#41; and the domain libraries &#40;`feature`, `ui`, `data-access`, `utils`&#41;.)
+
+[//]: # (* **State Management:** Implemented NgRx with a strict **Reactive Facade Pattern**. The UI components are completely decoupled from the store, relying entirely on Angular Signals provided by the Facade.)
+
+[//]: # (* **Modern Angular &#40;v21&#41;:** Utilized strict Standalone Components, the latest control flow syntax &#40;`@if`/`@for`&#41;, and configured the testing environment for purely **Zoneless** rendering &#40;`setupZonelessTestEnv`&#41;.)
+
+[//]: # (* **Performance & Caching:** The Facade intelligently handles caching, bypassing network requests if a user's specific data &#40;like orders&#41; is already loaded in the NgRx state.)
+
+[//]: # ()
+[//]: # (## 🧠 Design Patterns)
+
+[//]: # ()
+[//]: # (### The Reactive Facade Pattern)
+
+[//]: # (To achieve strict separation of concerns, the UI components have **zero knowledge of NgRx**.)
+
+[//]: # (* All interactions with the Store and network requests are hidden behind the `UsersFacade`.)
+
+[//]: # (* The Facade exposes state exclusively through computed **Angular Signals** &#40;e.g., a single `$vm` signal&#41;, making the UI components incredibly "dumb", performant, and easy to test.)
+
+[//]: # ()
+[//]: # (### Domain-Driven Structure)
+
+[//]: # (The workspace is split into clear library boundaries under `libs/users/`:)
+
+[//]: # (* `data-access`: Owns the NgRx Store, Effects, Services, and the Facade.)
+
+[//]: # (* `feature`: Smart components that route and connect the Facade to the UI.)
+
+[//]: # (* `ui`: Pure, dumb presentation components.)
+
+[//]: # (* `utils`: Shared interfaces and View Models.)
+
+[//]: # ()
+[//]: # (## 💻 Local Development)
+
+[//]: # ()
+[//]: # (To get the project running locally, run the following commands in your terminal:)
+
+[//]: # ()
+[//]: # (```bash)
+
+[//]: # (# 1. Install all dependencies)
+
+[//]: # (npm install)
+
+[//]: # ()
+[//]: # (# 2. Run the comprehensive Jest test suite)
+
+[//]: # (npm run test)
+
+[//]: # ()
+[//]: # (# 3. Serve the application locally)
+
+[//]: # (npx nx serve users-portal)
+
+[//]: # (# The app will automatically open and reload at http://localhost:4200/)
+
+[//]: # ()
+[//]: # (```)
+
+[//]: # (## 🛠 Available Commands)
+
+[//]: # ()
+[//]: # (This workspace is configured with custom npm scripts to streamline development and CI pipelines:)
+
+[//]: # ()
+[//]: # (| Command | Description |)
+
+[//]: # (| :--- | :--- |)
+
+[//]: # (| `npm start` | Serves the `users-portal` application locally at `http://localhost:4200/`. |)
+
+[//]: # (| `npm run format` | Runs Prettier to auto-format all code. |)
+
+[//]: # (| `npm run lint` | Runs ESLint across the entire Nx monorepo. |)
+
+[//]: # (| `npm run test` | Executes the Jest test suites across all isolated libraries. |)
+
+[//]: # (| `npm run validate` | Runs both linting and testing. Ideal for pre-commit checks. |)
+
+[//]: # (| `npm run build:prod` | Validates the codebase and generates the optimized production build. |)
+
+
+# FMR Trading System 📈
+
+A modern, scalable frontend architecture built for the FMR assignment.
+
+**🚀 Live Demo:** https://fmr-trading-system.vercel.app/
+
+## 📦 Project Overview
+
+This application demonstrates a scalable Angular architecture using Nx, NgRx, and Angular Signals.
+
+The UI displays a list of users and their associated orders. Selecting a user loads their orders while leveraging NgRx state caching to avoid unnecessary network requests.
+
+The project focuses on clean architectural boundaries, reactive state management, and modern Angular best practices.
+
+## 🏗 Architectural Highlights
+
+* **Nx Monorepo:** Organized with strict boundaries between the App Shell (`users-portal`) and the highly cohesive domain libraries (`feature`, `ui`, `data-access`, `utils`).
+* **State Management (NgRx):** Powered by NgRx, utilizing **NgRx Entity** for normalized state storage and highly efficient CRUD operations.
+* **Modern Angular (v21):** Built on the absolute bleeding edge of the framework, utilizing:
+  * Strict Standalone Components
+  * The latest control flow syntax (`@if`, `@for`)
+  * Angular Signals
+  * Purely Zoneless testing environments (`setupZonelessTestEnv`)
+* **Signals + Selectors Integration:** NgRx selectors are seamlessly converted into Angular Signals using `store.selectSignal`, bridging the gap between global state and local reactivity.
+* **Performance & Smart Caching:** The Facade intelligently prevents redundant network requests by checking if a user's specific data (like orders) already exists in the store before dispatching load actions.
+
+---
+
+## 🧠 Design Patterns
+
+### Reactive Facade Pattern
+To maintain strict separation of concerns, the UI components have **zero knowledge of NgRx**.
+
+All interactions with the Store and network requests are handled entirely by the `UsersFacade`. The facade exposes state exclusively through computed **Angular Signals**, including a single `$vm` signal that provides a perfectly mapped view model for the UI.
+
+This approach results in:
+* Very simple, "dumb" UI components
+* Zero manual RxJS subscriptions in the components or templates
+* Clear, strict separation of business logic from presentation
+* A highly testable architecture
+
+### ⚡ State Flow
+The application follows a predictable reactive flow:
+
+```text
+User Interaction
+  ↓
+Feature Component
+  ↓
+UsersFacade
+  ↓
+NgRx Actions
+  ↓
+Effects (API calls)
+  ↓
+Reducers (state updates)
+  ↓
+Selectors
+  ↓
+Angular Signals
+  ↓
+ViewModel
+  ↓
+UI Rendering
 ```
 
-To create a production bundle:
+### Domain-Driven Library Structure
+The workspace is split into clear domain boundaries under `libs/users/`.
 
-```sh
-npx nx build users-portal
+```text
+apps/
+  users-portal       → Application shell
+
+libs/users/
+  data-access        → NgRx store, effects, services, facade
+  feature            → Smart components connecting facade to UI
+  ui                 → Pure presentational components
+  utils              → Models, types and view models
 ```
 
-To see all available targets to run for a project, run:
+#### Library Responsibilities
 
-```sh
-npx nx show project users-portal
+| Library | Responsibility |
+| :--- | :--- |
+| `data-access` | State management (NgRx Store, Effects, Facade) |
+| `feature` | Smart components orchestrating UI logic |
+| `ui` | Pure presentation components |
+| `utils` | Shared models, interfaces and view models |
+
+This structure enforces **clean architectural boundaries** and improves maintainability.
+
+---
+
+## 💻 Local Development
+
+To get the project running locally, execute the following commands in your terminal:
+
+```bash
+# 1. Install all dependencies
+npm install
+
+# 2. Run the comprehensive Jest test suite
+npm run test
+
+# 3. Serve the application locally
+npm start
+# The app will automatically open and reload at http://localhost:4200/
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+---
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🛠 Available Commands
 
-## Add new projects
+This workspace is configured with custom npm scripts to streamline development and CI pipelines:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+| Command | Description |
+| :--- | :--- |
+| `npm start` | Serves the `users-portal` application locally at `http://localhost:4200/`. |
+| `npm run format` | Runs Prettier to auto-format all code. |
+| `npm run lint` | Runs ESLint across the entire Nx monorepo. |
+| `npm run test` | Executes the Jest test suites across all isolated libraries. |
+| `npm run validate` | Runs both linting and testing. Ideal for pre-commit checks. |
+| `npm run build:prod` | Validates the codebase and generates the optimized production build. |
 
-Use the plugin's generator to create new projects.
+---
 
-To generate a new application, use:
+## 🧪 Testing
 
-```sh
-npx nx g @nx/angular:app demo
+The workspace uses **Jest** for testing. Libraries are tested independently to ensure isolated domain logic.
+
+The test environment is configured for **Zoneless Angular testing** using:
+
+```typescript
+import { setupZonelessTestEnv } from 'jest-preset-angular/setup-env/zoneless';
+
+setupZonelessTestEnv({
+  errorOnUnknownElements: true,
+  errorOnUnknownProperties: true
+});
 ```
 
-To generate a new library, use:
+---
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
+## 📝 Notes
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+This project uses **mock data** for demonstration purposes. In a real-world application, the `UserService` would communicate with backend APIs via Angular's `HttpClient`.
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 📌 Summary
 
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This project demonstrates:
+* Scalable **Nx monorepo architecture**
+* Clean **domain-driven library structure**
+* **NgRx Entity + Selectors** for normalized state
+* **Angular Signals** for reactive UI
+* **Facade pattern** for strict separation of concerns
+* Modern Angular features and best practices

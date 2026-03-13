@@ -1,0 +1,64 @@
+@if (facade.$vm(); as vm) {
+  <section class="shell">
+    <header class="page-header">
+      <h1>Users orders dashboard</h1>
+
+      <div class="subtitle-row">
+        <p>Facade-driven example with NgRx entity, selectors and signals.</p>
+
+        <span
+          class="spinner"
+          [class.hidden]="!vm.loading"
+          aria-label="Loading"
+        ></span>
+      </div>
+    </header>
+
+    @if (vm.error) {
+      <p class="error-state">{{ vm.error }}</p>
+    }
+
+    <div class="actions">
+      @for (user of vm.users; track user.id) {
+        <button
+          type="button"
+          class="user-button"
+          [class.active]="vm.selectedUserId === user.id"
+          (click)="selectUser(user.id)"
+        >
+          {{ user.name }}
+        </button>
+      }
+    </div>
+
+    @if (vm.selectedUserSummary; as summary) {
+      <div class="summary-grid">
+        <fmr-user-name [userName]="summary.userName" />
+        <fmr-user-total-orders [totalAmount]="summary.totalAmount" />
+      </div>
+
+      <div class="orders-card">
+        <h2>Orders</h2>
+
+        @if (vm.error) {
+          <p class="error-state">{{ vm.error }}</p>
+        } @else if (vm.loading) {
+          <p class="loading-state">Loading orders...</p>
+        } @else if (vm.orders.length) {
+          <ul>
+            @for (order of vm.orders; track order.id) {
+              <li>
+                <span>#{{ order.id }}</span>
+                <strong>{{ order.total | number: '1.2-2' }}</strong>
+              </li>
+            }
+          </ul>
+        } @else if (vm.loaded) {
+          <p>No orders for this user.</p>
+        }
+      </div>
+    } @else if (!vm.loading && vm.loaded) {
+      <p class="empty-state">Select a user</p>
+    }
+  </section>
+}

@@ -7,3 +7,4 @@ export * from './lib/models/user-total-orders.vm';
 export * from './lib/models/user.interface';
 export * from './lib/models/users-state.model';
 export * from './lib/models/base-entity-state.interface';
+export * from './lib/utils/user-orders.utils';

@@ -1,5 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
+  buildUserTotalOrdersVm,
+  getOrdersByUserId,
   Order,
   OrdersState,
   ORDERS_FEATURE_KEY,
@@ -33,23 +35,13 @@ const selectSelectedUser = createSelector(
 const selectSelectedUserOrders = createSelector(
   selectAllOrders,
   selectSelectedUserId,
-  (orders, selectedUserId): Order[] =>
-    selectedUserId == null ? [] : orders.filter((order) => order.userId === selectedUserId)
+  (orders, selectedUserId): Order[] => getOrdersByUserId(orders, selectedUserId)
 );
 
 const selectUserTotalOrdersVm = createSelector(
   selectSelectedUser,
   selectSelectedUserOrders,
-  (selectedUser, orders): UserTotalOrdersVm | null => {
-    if (!selectedUser) {
-      return null;
-    }
-
-    return {
-      userName: selectedUser.name,
-      totalAmount: orders.reduce((sum, order) => sum + order.total, 0)
-    };
-  }
+  (selectedUser, orders): UserTotalOrdersVm | null => buildUserTotalOrdersVm(selectedUser, orders)
 );
 
 const selectUsersLoading = createSelector(selectUsersState, (state) => state.loading);

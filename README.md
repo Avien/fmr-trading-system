@@ -273,3 +273,9 @@ This project demonstrates:
 * **Angular Signals** for reactive UI
 * **Facade pattern** for strict separation of concerns
 * Modern Angular features and best practices
+
+
+## AI-Assisted Development
+
+Parts of this project were developed with AI-assisted tooling to accelerate scaffolding, iterative refactoring and documentation.
+All architectural decisions, design trade-offs and the final code structure were reviewed and adjusted manually.

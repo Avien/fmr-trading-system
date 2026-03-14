@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { UsersFacade } from './users.facade';
 import { UsersActions } from '../+state/users.actions';
-import { UsersSelectors } from '../+state/users.selectors'; // <-- Updated import
+import { UsersSelectors } from '../+state/users.selectors';
 import { User, Order, UserOrderSummary } from '@fmr/users/utils';
 
 describe('UsersFacade', () => {
@@ -19,7 +19,7 @@ describe('UsersFacade', () => {
             { selector: UsersSelectors.selectAllUsers, value: [] },
             { selector: UsersSelectors.selectSelectedUserId, value: null },
             { selector: UsersSelectors.selectSelectedUserOrders, value: [] },
-            { selector: UsersSelectors.selectUserTotalOrdersVm, value: null },
+            { selector: UsersSelectors.selectUserOrderSummary, value: null },
             { selector: UsersSelectors.selectLoading, value: false },
             { selector: UsersSelectors.selectLoaded, value: false },
             { selector: UsersSelectors.selectError, value: null }
@@ -42,23 +42,18 @@ describe('UsersFacade', () => {
   describe('Signals & ViewModel ($vm)', () => {
     it('should compute $vm correctly based on updated store selectors', () => {
       // Create mock data
-      const mockUsers: User[] = [
-        { id: 1, name: 'Avi Cohen', email: 'avi@test.com', city: 'Tel Aviv' }
-      ];
-      const mockOrders: Order[] = [
-        { id: 101, userId: 1, title: 'Stock Purchase', amount: 500, createdAt: '2026-03-12' }
-      ];
+      const mockUsers: User[] = [{ id: 1, name: 'Avi Cohen' }];
+      const mockOrders: Order[] = [{ id: 101, userId: 1, total: 500 }];
       const mockSummary: UserOrderSummary = {
         userName: 'Avi Cohen',
-        totalAmount: 500,
-        ordersCount: 1
+        totalAmount: 500
       };
 
       // Override the store selectors with the mock data, including the new state flags
       store.overrideSelector(UsersSelectors.selectAllUsers, mockUsers);
       store.overrideSelector(UsersSelectors.selectSelectedUserId, 1);
       store.overrideSelector(UsersSelectors.selectSelectedUserOrders, mockOrders);
-      store.overrideSelector(UsersSelectors.selectUserTotalOrdersVm, mockSummary);
+      store.overrideSelector(UsersSelectors.selectUserOrderSummary, mockSummary);
       store.overrideSelector(UsersSelectors.selectLoading, true);
       store.overrideSelector(UsersSelectors.selectLoaded, false);
       store.overrideSelector(UsersSelectors.selectError, null);
@@ -90,9 +85,7 @@ describe('UsersFacade', () => {
     });
 
     it('should NOT dispatch loadUsers when $users already has data (Cache Hit)', () => {
-      const mockUsers: User[] = [
-        { id: 1, name: 'Avi Cohen', email: 'avi@test.com', city: 'Tel Aviv' }
-      ];
+      const mockUsers: User[] = [{ id: 1, name: 'Avi Cohen' }];
 
       store.overrideSelector(UsersSelectors.selectAllUsers, mockUsers);
       store.refreshState();
@@ -112,9 +105,7 @@ describe('UsersFacade', () => {
     });
 
     it('should dispatch ONLY selectUser when $selectedUserOrders has data (Cache Hit)', () => {
-      const mockOrders: Order[] = [
-        { id: 101, userId: 1, title: 'Stock Purchase', amount: 300, createdAt: '2026-03-12' }
-      ];
+      const mockOrders: Order[] = [{ id: 101, userId: 1, total: 300 }];
       store.overrideSelector(UsersSelectors.selectSelectedUserOrders, mockOrders);
       store.refreshState();
 
@@ -133,13 +124,13 @@ describe('UsersFacade', () => {
     });
 
     it('should dispatch addUser action', () => {
-      const newUser: User = { id: 2, name: 'Dana', email: 'dana@test.com', city: 'Haifa' };
+      const newUser: User = { id: 2, name: 'Dana' };
       facade.addUser(newUser);
       expect(store.dispatch).toHaveBeenCalledWith(UsersActions.addUser({ user: newUser }));
     });
 
     it('should dispatch updateUser action', () => {
-      const updatedUser: User = { id: 2, name: 'Dana Levi', email: 'dana@test.com', city: 'Haifa' };
+      const updatedUser: User = { id: 2, name: 'Dana Levi' };
       facade.updateUser(updatedUser);
       expect(store.dispatch).toHaveBeenCalledWith(UsersActions.updateUser({ user: updatedUser }));
     });

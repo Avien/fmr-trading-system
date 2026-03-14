@@ -1,5 +1,5 @@
 import { Order } from '../models/order.interface';
-import { UserTotalOrdersVm } from '../models/user-total-orders.vm';
+import { UserOrderSummary } from '../models/user-order.summary';
 import { User } from '../models/user.interface';
 
 export function getOrdersByUserId(orders: Order[], userId: number | null): Order[] {
@@ -17,7 +17,7 @@ export function getTotalOrdersAmount(orders: Order[]): number {
 export function buildUserTotalOrdersVm(
   user: User | null,
   orders: Order[]
-): UserTotalOrdersVm | null {
+): UserOrderSummary | null {
   if (!user) {
     return null;
   }

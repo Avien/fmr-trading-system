@@ -1,6 +1,6 @@
 import { Order } from './order.interface';
 import { User } from './user.interface';
-import { UserTotalOrdersVm } from './user-total-orders.vm';
+import { UserOrderSummary } from './user-order.summary';
 
 /**
  * ViewModel consumed by the feature component.
@@ -9,7 +9,7 @@ import { UserTotalOrdersVm } from './user-total-orders.vm';
 export interface UserOrdersVm {
   users: User[];
   selectedUserId: number | null;
-  selectedUserSummary: UserTotalOrdersVm | null;
+  selectedUserSummary: UserOrderSummary | null;
   orders: Order[];
   loading: boolean;
   loaded: boolean;

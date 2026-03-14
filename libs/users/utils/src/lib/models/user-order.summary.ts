@@ -1,4 +1,4 @@
-export interface UserTotalOrdersVm {
+export interface UserOrderSummary {
   userName: string;
   totalAmount: number;
 }

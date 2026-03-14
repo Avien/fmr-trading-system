@@ -122,7 +122,8 @@ The project focuses on clean architectural boundaries, reactive state management
 
 ## 🏗 Architectural Highlights
 
-* **Nx Monorepo:** Organized with strict boundaries between the App Shell (`users-portal`) and the highly cohesive domain libraries (`feature`, `ui`, `data-access`, `utils`).
+* **Nx Monorepo:** Organized with strict boundaries between the App Shell (`users-portal`) and the domain libraries (`feature`, `ui`, `data-access`, `utils`), with architectural constraints enforced through Nx ESLint module boundary rules.
+* **Utils Library:** Hosts pure business logic utilities that are framework-agnostic, reusable, and independently unit tested, promoting clean separation between domain logic and framework-specific code.
 * **State Management (NgRx):** Powered by NgRx, utilizing **NgRx Entity** for normalized state storage and highly efficient CRUD operations.
 * **Modern Angular (v21):** Built on the absolute bleeding edge of the framework, utilizing:
   * Strict Standalone Components
@@ -251,9 +252,17 @@ setupZonelessTestEnv({
 
 ## 📝 Notes
 
-This project uses **mock data** for demonstration purposes. In a real-world application, the `UserService` would communicate with backend APIs via Angular's `HttpClient`.
+- The app is built using **Nx** for a **strict monorepo structure** and **Nx plugins** for efficient development workflows.
+- This project uses **mock data** for demonstration purposes. In a real-world application, the `UserService` would communicate with backend APIs via Angular's `HttpClient`.
+- The `UsersFacade` is responsible for managing the NgRx Store and triggering network requests. It abstracts the complexity of state management and API interactions.
+- The `UsersFacade` is also responsible for **smart caching** to avoid unnecessary network requests.
+- The `UsersFacade` is also responsible for **reactive UI updates** using Angular Signals.
+- The `UsersFacade` is also responsible for **strict separation of concerns** by hiding NgRx state from the UI components.
+- The `UsersFacade` is also responsible for **testing** by providing a **mock implementation** for the `UserService`.
+- The `UsersFacade` is also responsible for **performance optimization** by leveraging NgRx's **Entity** feature for normalized state management.
+- The `UsersFacade` is also responsible for **modularization** by splitting the business logic into separate services and reusable functions.
+- The `UsersFacade` supports all user CRUD opertaions for future enhancements, exposed via public apis.
 
----
 
 ## 📌 Summary
 

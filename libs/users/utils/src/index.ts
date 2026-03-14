@@ -3,7 +3,7 @@ export * from './lib/models/app-state.interface';
 export * from './lib/models/order.interface';
 export * from './lib/models/orders-state.interface';
 export * from './lib/models/user-orders.vm';
-export * from './lib/models/user-total-orders.vm';
+export * from './lib/models/user-order.summary';
 export * from './lib/models/user.interface';
 export * from './lib/models/users-state.model';
 export * from './lib/models/base-entity-state.interface';

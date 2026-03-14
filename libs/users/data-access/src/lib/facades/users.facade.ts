@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState, UserOrdersVm, User, Order, UserTotalOrdersVm } from '@fmr/users/utils';
+import { AppState, UserOrdersVm, User, Order, UserOrderSummary } from '@fmr/users/utils';
 import { UsersActions } from '../+state/users.actions';
 import { UsersSelectors } from '../+state/users.selectors';
 
@@ -8,7 +8,7 @@ import { UsersSelectors } from '../+state/users.selectors';
  * UsersFacade
  *
  * Encapsulates all interaction with the NgRx store and side effects.
- * UI components depend only on Angular Signals exposed here and remain
+ * UI components depend only on Angular Signals exposed via the $vm and remain
  * completely unaware of NgRx implementation details.
  *
  * This keeps components simple, testable, and decoupled from state management.
@@ -24,8 +24,8 @@ export class UsersFacade {
   readonly $selectedUserOrders: Signal<Order[]> = this.store.selectSignal(
     UsersSelectors.selectSelectedUserOrders
   );
-  readonly $selectedUserSummary: Signal<UserTotalOrdersVm | null> = this.store.selectSignal(
-    UsersSelectors.selectUserTotalOrdersVm
+  readonly $selectedUserOrderSummary: Signal<UserOrderSummary | null> = this.store.selectSignal(
+    UsersSelectors.selectUserOrderSummary
   );
   readonly $loading: Signal<boolean> = this.store.selectSignal(UsersSelectors.selectLoading);
   readonly $loaded: Signal<boolean> = this.store.selectSignal(UsersSelectors.selectLoaded);
@@ -34,7 +34,7 @@ export class UsersFacade {
   readonly $vm: Signal<UserOrdersVm> = computed<UserOrdersVm>(() => ({
     users: this.$users(),
     selectedUserId: this.$selectedUserId(),
-    selectedUserSummary: this.$selectedUserSummary(),
+    selectedUserSummary: this.$selectedUserOrderSummary(),
     orders: this.$selectedUserOrders(),
     loading: this.$loading(),
     loaded: this.$loaded(),
@@ -68,7 +68,7 @@ export class UsersFacade {
     }
   }
 
-  //public crud api for future enhancements in the app
+  //public CRUD apis for future enhancements in the app
   addUser(user: User) {
     this.store.dispatch(UsersActions.addUser({ user }));
   }

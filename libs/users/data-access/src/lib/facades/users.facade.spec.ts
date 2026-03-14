@@ -3,7 +3,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { UsersFacade } from './users.facade';
 import { UsersActions } from '../+state/users.actions';
 import { UsersSelectors } from '../+state/users.selectors'; // <-- Updated import
-import { User, Order, UserTotalOrdersVm } from '@fmr/users/utils';
+import { User, Order, UserOrderSummary } from '@fmr/users/utils';
 
 describe('UsersFacade', () => {
   let facade: UsersFacade;
@@ -48,7 +48,7 @@ describe('UsersFacade', () => {
       const mockOrders: Order[] = [
         { id: 101, userId: 1, title: 'Stock Purchase', amount: 500, createdAt: '2026-03-12' }
       ];
-      const mockSummary: UserTotalOrdersVm = {
+      const mockSummary: UserOrderSummary = {
         userName: 'Avi Cohen',
         totalAmount: 500,
         ordersCount: 1

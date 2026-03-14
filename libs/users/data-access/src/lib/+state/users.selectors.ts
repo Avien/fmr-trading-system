@@ -6,7 +6,7 @@ import {
   OrdersState,
   ORDERS_FEATURE_KEY,
   USERS_FEATURE_KEY,
-  UserTotalOrdersVm,
+  UserOrderSummary,
   UsersState
 } from '@fmr/users/utils';
 import { ordersAdapter } from './orders.reducer';
@@ -38,10 +38,10 @@ const selectSelectedUserOrders = createSelector(
   (orders, selectedUserId): Order[] => getOrdersByUserId(orders, selectedUserId)
 );
 
-const selectUserTotalOrdersVm = createSelector(
+const selectUserOrderSummary = createSelector(
   selectSelectedUser,
   selectSelectedUserOrders,
-  (selectedUser, orders): UserTotalOrdersVm | null => buildUserTotalOrdersVm(selectedUser, orders)
+  (selectedUser, orders): UserOrderSummary | null => buildUserTotalOrdersVm(selectedUser, orders)
 );
 
 const selectUsersLoading = createSelector(selectUsersState, (state) => state.loading);
@@ -74,18 +74,12 @@ const selectError = createSelector(
   (usersError, ordersError) => usersError || ordersError
 );
 
-const selectOrdersLoadedForUser = (userId: number) =>
-  createSelector(selectAllOrders, (orders: Order[]) =>
-    orders.some((order) => order.userId === userId)
-  );
-
 export const UsersSelectors = {
   selectAllUsers,
   selectSelectedUserId,
   selectSelectedUserOrders,
-  selectUserTotalOrdersVm,
+  selectUserOrderSummary,
   selectLoading,
   selectLoaded,
-  selectError,
-  selectOrdersLoadedForUser
+  selectError
 };

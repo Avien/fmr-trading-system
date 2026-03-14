@@ -277,5 +277,5 @@ This project demonstrates:
 
 ## AI-Assisted Development
 
-Parts of this project were developed with AI-assisted tooling to accelerate scaffolding, iterative refactoring and documentation.
-All architectural decisions, design trade-offs and the final code structure were reviewed and adjusted manually.
+- Parts of this project were developed with AI-assisted tooling to accelerate scaffolding, iterative refactoring and documentation.
+- All architectural decisions, design trade-offs and the final code structure were reviewed and adjusted manually.

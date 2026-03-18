@@ -275,7 +275,11 @@ This project demonstrates:
 * Modern Angular features and best practices
 
 
-## AI-Assisted Development
+## 🤖 AI-Assisted Development
 
-- Parts of this project were developed with AI-assisted tooling to accelerate scaffolding, iterative refactoring and documentation.
-- All architectural decisions, design trade-offs and the final code structure were reviewed and adjusted manually.
+- The system was designed by translating product requirements into a clear architectural model, including structure, boundaries, and implementation patterns.
+- AI was used as an implementation accelerator to generate a strong initial baseline aligned with this architecture.
+- The system was then refined iteratively through engineering-led review, testing, and targeted improvements.
+- AI also supported architecture-aware reviews, helping identify performance risks and structural inconsistencies.
+- Final design decisions, trade-offs, and code quality were owned and validated manually.
+

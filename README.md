@@ -105,7 +105,7 @@
 
 # Users Portal
 
-A modern, scalable frontend architecture designed for large-scale applications.
+A modern, scalable frontend architecture designed for large scale applications.
 
 **🚀 Live Demo:** https://fmr-trading-system.vercel.app/
 

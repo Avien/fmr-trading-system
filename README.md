@@ -103,9 +103,9 @@
 [//]: # (| `npm run build:prod` | Validates the codebase and generates the optimized production build. |)
 
 
-# FMR Trading System 📈
+# Users Portal
 
-A modern, scalable frontend architecture built for the FMR assignment.
+A modern, scalable frontend architecture designed for large-scale applications.
 
 **🚀 Live Demo:** https://fmr-trading-system.vercel.app/
 

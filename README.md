@@ -1,7 +1,4 @@
-[//]: # (# FMR Trading System 📈)
-
-[//]: # ()
-[//]: # (A modern, scalable frontend architecture built for the FMR assignment.)
+[//]: # (# Users Portal)
 
 [//]: # ()
 [//]: # (**🚀 Live Demo:** https://fmr-trading-system.vercel.app/)

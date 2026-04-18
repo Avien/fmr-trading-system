@@ -116,7 +116,9 @@ A modern, scalable frontend architecture built for the FMR assignment.
 
 This application demonstrates a scalable Angular architecture using Nx, NgRx, and Angular Signals.
 
-The UI displays a list of users and their associated orders. Selecting a user loads their orders while leveraging NgRx state caching to avoid unnecessary network requests.
+The UI displays a list of users and their associated orders. Selecting a user loads orders lazily, with per-user cache tracking to avoid redundant API calls while still allowing real-time updates.
+
+The app now supports a WebSocket-driven order stream (`order-update`) that feeds NgRx in real time. Incoming socket events are normalized, merged with lazy API loads, and rendered reactively through selectors + signals.
 
 The project focuses on clean architectural boundaries, reactive state management, and modern Angular best practices.
 
@@ -125,13 +127,14 @@ The project focuses on clean architectural boundaries, reactive state management
 * **Nx Monorepo:** Organized with strict boundaries between the App Shell (`users-portal`) and the domain libraries (`feature`, `ui`, `data-access`, `utils`), with architectural constraints enforced through Nx ESLint module boundary rules.
 * **Utils Library:** Hosts pure business logic utilities that are framework-agnostic, reusable, and independently unit tested, promoting clean separation between domain logic and framework-specific code.
 * **State Management (NgRx):** Powered by NgRx, utilizing **NgRx Entity** for normalized state storage and highly efficient CRUD operations.
+* **Real-time Order Ingestion:** WebSocket events are consumed through Effects and merged into store state without losing lazily loaded API data.
 * **Modern Angular (v21):** Built on the absolute bleeding edge of the framework, utilizing:
   * Strict Standalone Components
   * The latest control flow syntax (`@if`, `@for`)
   * Angular Signals
   * Purely Zoneless testing environments (`setupZonelessTestEnv`)
 * **Signals + Selectors Integration:** NgRx selectors are seamlessly converted into Angular Signals using `store.selectSignal`, bridging the gap between global state and local reactivity.
-* **Performance & Smart Caching:** The Facade intelligently prevents redundant network requests by checking if a user's specific data (like orders) already exists in the store before dispatching load actions.
+* **Performance & Smart Caching:** The Facade uses per-user loaded flags (`loadedUserIds`) instead of order-list length, preventing false cache hits when partial WebSocket data arrives before first API load.
 
 ---
 
@@ -160,7 +163,7 @@ UsersFacade
   ↓
 NgRx Actions
   ↓
-Effects (API calls)
+Effects (API calls + WS stream mapping)
   ↓
 Reducers (state updates)
   ↓
@@ -211,7 +214,10 @@ npm install
 # 2. Run the comprehensive Jest test suite
 npm run test
 
-# 3. Serve the application locally
+# 3. Start the local WS mock stream (optional but recommended for live updates)
+npm run mock:ws
+
+# 4. Serve the application locally
 npm start
 # The app will automatically open and reload at http://localhost:4200/
 ```
@@ -225,6 +231,7 @@ This workspace is configured with custom npm scripts to streamline development a
 | Command | Description |
 | :--- | :--- |
 | `npm start` | Serves the `users-portal` application locally at `http://localhost:4200/`. |
+| `npm run mock:ws` | Starts a local WebSocket server at `ws://localhost:3000/orders` that emits mock `order-update` events. |
 | `npm run format` | Runs Prettier to auto-format all code. |
 | `npm run lint` | Runs ESLint across the entire Nx monorepo. |
 | `npm run test` | Executes the Jest test suites across all isolated libraries. |
@@ -254,6 +261,7 @@ setupZonelessTestEnv({
 
 - The app is built using **Nx** for a **strict monorepo structure** and **Nx plugins** for efficient development workflows.
 - This project uses **mock data** for demonstration purposes. In a real-world application, the `UserService` would communicate with backend APIs via Angular's `HttpClient`.
+- Real-time updates are simulated locally through `tools/mock-orders-ws-server.mjs`; run `npm run mock:ws` before `npm start` to see streaming order creation.
 - The `UsersFacade` is responsible for managing the NgRx Store and triggering network requests. It abstracts the complexity of state management and API interactions.
 - The `UsersFacade` is also responsible for **smart caching** to avoid unnecessary network requests.
 - The `UsersFacade` is also responsible for **reactive UI updates** using Angular Signals.
@@ -270,6 +278,7 @@ This project demonstrates:
 * Scalable **Nx monorepo architecture**
 * Clean **domain-driven library structure**
 * **NgRx Entity + Selectors** for normalized state
+* **WebSocket + NgRx Effects** for real-time order ingestion
 * **Angular Signals** for reactive UI
 * **Facade pattern** for strict separation of concerns
 * Modern Angular features and best practices

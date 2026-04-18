@@ -7,7 +7,21 @@ export function getOrdersByUserId(orders: Order[], userId: number | null): Order
     return [];
   }
 
-  return orders.filter((order) => order.userId === userId);
+  return orders
+    .filter((order) => order.userId === userId)
+    .sort((a, b) => a.id - b.id);
+}
+
+export function normalizeOrderUserIdFromId(order: Order): Order {
+  // Assignment convention used by MOCK_ORDERS + the WS simulator:
+  // 1xx -> user 1, 2xx -> user 2, 3xx -> user 3
+  const userId = Math.floor(order.id / 100);
+
+  if (userId === order.userId) {
+    return order;
+  }
+
+  return { ...order, userId };
 }
 
 export function getTotalOrdersAmount(orders: Order[]): number {

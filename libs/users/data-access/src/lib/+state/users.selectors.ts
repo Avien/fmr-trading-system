@@ -56,6 +56,14 @@ const selectOrdersLoaded = createSelector(selectOrdersState, (state) => state.lo
 
 const selectOrdersError = createSelector(selectOrdersState, (state) => state.error);
 
+const selectLoadedUserOrderIds = createSelector(
+  selectOrdersState,
+  (state) => state?.loadedUserIds ?? []
+);
+
+const selectHasLoadedOrdersForUser = (userId: number) =>
+  createSelector(selectLoadedUserOrderIds, (loadedUserIds) => loadedUserIds.includes(userId));
+
 const selectLoading = createSelector(
   selectUsersLoading,
   selectOrdersLoading,
@@ -77,6 +85,8 @@ const selectError = createSelector(
 export const UsersSelectors = {
   selectAllUsers,
   selectSelectedUserId,
+  selectLoadedUserOrderIds,
+  selectHasLoadedOrdersForUser,
   selectSelectedUserOrders,
   selectUserOrderSummary,
   selectLoading,

@@ -1,6 +1,6 @@
 import { createEntityAdapter } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { Order, OrdersState } from '@fmr/users/utils';
+import { Order, OrdersState, normalizeOrderUserIdFromId } from '@fmr/users/utils';
 import { UsersActions } from './users.actions';
 
 export const ordersAdapter = createEntityAdapter<Order>();
@@ -8,7 +8,8 @@ export const ordersAdapter = createEntityAdapter<Order>();
 export const initialOrdersState: OrdersState = ordersAdapter.getInitialState({
   loading: false,
   loaded: false,
-  error: null
+  error: null,
+  loadedUserIds: []
 });
 
 export const ordersReducer = createReducer(
@@ -23,32 +24,26 @@ export const ordersReducer = createReducer(
   /**
    * @action loadUserOrdersSuccess
    * @description
-   * Updates the store with fresh orders for a specific user while ensuring perfect
-   * synchronization with the server (handling server-side deletions).
-   * * @logic
-   * 1. THE PROBLEM: If we only use `upsertMany`, orders deleted on the server will
-   * remain stuck in the client state (because they aren't in the incoming payload).
-   * 2. THE SOLUTION: We must "flush" the user's old orders before inserting the new ones.
-   * 3. OPTIMIZATION: Instead of extracting Object.values() and chaining multiple array
-   * methods (map -> filter -> map), we iterate over `state.ids` exactly ONCE.
-   * We leverage `state.entities[id]` for an O(1) time-complexity lookup.
-   * 4. Finally, we chain NgRx's highly optimized `removeMany` and `upsertMany`
-   * to maintain immutability and performance.
+   * Merges API orders into the current entity state for the selected user.
+   *
+   * @why
+   * WebSocket events may add new orders before the user's lazy API load completes.
+   * We use `upsertMany` (without pre-removal) so WS-created orders are preserved,
+   * while API-provided orders are inserted/updated by id.
+   *
+   * @note
+   * This strategy prefers data retention (no accidental WS data loss) over strict
+   * API snapshot replacement.
    */
   on(UsersActions.loadUserOrdersSuccess, (state, { userId, orders }) => {
-    //Remove any existing orders belonging to this user before inserting the fresh ones.
-    //This keeps the entity state normalized and prevents stale data.
-    const staleOrderIds = (state.ids as number[]).filter(
-      (id) => state.entities[id]?.userId === userId
-    );
-
-    const stateAfterRemoval = ordersAdapter.removeMany(staleOrderIds, state);
-
     return ordersAdapter.upsertMany(orders, {
-      ...stateAfterRemoval,
+      ...state,
       loading: false,
       loaded: true,
-      error: null
+      error: null,
+      loadedUserIds: state.loadedUserIds.includes(userId)
+        ? state.loadedUserIds
+        : [...state.loadedUserIds, userId]
     });
   }),
 
@@ -64,6 +59,15 @@ export const ordersReducer = createReducer(
       (id) => state.entities[id]?.userId === userId
     );
 
-    return ordersAdapter.removeMany(deletedUserOrderIds, state);
+    const stateAfterRemoval = ordersAdapter.removeMany(deletedUserOrderIds, state);
+
+    return {
+      ...stateAfterRemoval,
+      loadedUserIds: stateAfterRemoval.loadedUserIds.filter((id) => id !== userId)
+    };
+  }),
+
+  on(UsersActions.ordersUpdatedFromSocket, (state, { order }) => {
+    return ordersAdapter.addOne(normalizeOrderUserIdFromId(order), state);
   })
 );

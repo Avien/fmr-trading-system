@@ -1,8 +1,7 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 import { Order, User } from '@fmr/users/utils';
 import { MOCK_ORDERS, MOCK_USERS } from './user.mocks';
-
 /**
  * Mock data-access service for the assignment.
  * In a real application, these methods would call backend HTTP endpoints

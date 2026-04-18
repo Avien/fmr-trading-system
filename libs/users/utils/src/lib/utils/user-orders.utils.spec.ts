@@ -1,7 +1,8 @@
 import {
   buildUserTotalOrdersVm,
   getOrdersByUserId,
-  getTotalOrdersAmount
+  getTotalOrdersAmount,
+  normalizeOrderUserIdFromId
 } from './user-orders.utils';
 
 import { Order } from '../models/order.interface';
@@ -20,7 +21,7 @@ describe('user-orders.utils', () => {
   };
 
   describe('getOrdersByUserId', () => {
-    it('should return only orders for the selected user', () => {
+    it('should return only orders for the selected user sorted by id ascending', () => {
       expect(getOrdersByUserId(mockOrders, 101)).toEqual([
         { id: 1, userId: 101, total: 10 },
         { id: 2, userId: 101, total: 15.5 }
@@ -57,6 +58,18 @@ describe('user-orders.utils', () => {
 
     it('should return null when user is missing', () => {
       expect(buildUserTotalOrdersVm(null, mockOrders)).toBeNull();
+    });
+  });
+
+  describe('normalizeOrderUserIdFromId', () => {
+    it('should leave the order unchanged when userId already matches id convention', () => {
+      const order: Order = { id: 304, userId: 3, total: 10 };
+      expect(normalizeOrderUserIdFromId(order)).toBe(order);
+    });
+
+    it('should rewrite userId from id when payload is inconsistent', () => {
+      const order: Order = { id: 304, userId: 1, total: 10 };
+      expect(normalizeOrderUserIdFromId(order)).toEqual({ id: 304, userId: 3, total: 10 });
     });
   });
 });

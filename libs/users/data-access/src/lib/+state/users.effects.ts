@@ -1,13 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, filter, map, of, switchMap } from 'rxjs';
+import { catchError, EMPTY, filter, map, of, switchMap } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { UsersActions } from './users.actions';
+import { OrdersService } from '../services/orders.service';
 
 @Injectable()
 export class UsersEffects {
   private actions$ = inject(Actions);
   private userService = inject(UserService);
+  private ordersService = inject(OrdersService);
 
   loadUsers$ = createEffect(() =>
     this.actions$.pipe(
@@ -79,4 +81,11 @@ export class UsersEffects {
       )
     )
   );
+
+  ordersUpdatedFromSocket$ = createEffect(() => {
+    return this.ordersService.ordersUpdates$.pipe(
+      map((order) => UsersActions.ordersUpdatedFromSocket({ order })),
+      catchError(() => EMPTY)
+    );
+  });
 }

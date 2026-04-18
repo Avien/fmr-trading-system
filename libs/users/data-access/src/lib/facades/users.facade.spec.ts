@@ -20,6 +20,7 @@ describe('UsersFacade', () => {
             { selector: UsersSelectors.selectSelectedUserId, value: null },
             { selector: UsersSelectors.selectSelectedUserOrders, value: [] },
             { selector: UsersSelectors.selectUserOrderSummary, value: null },
+            { selector: UsersSelectors.selectLoadedUserOrderIds, value: [] },
             { selector: UsersSelectors.selectLoading, value: false },
             { selector: UsersSelectors.selectLoaded, value: false },
             { selector: UsersSelectors.selectError, value: null }
@@ -97,16 +98,18 @@ describe('UsersFacade', () => {
   });
 
   describe('selectUser & Caching Logic', () => {
-    it('should dispatch selectUser AND loadUserOrders when $selectedUserOrders is empty', () => {
+    it('should dispatch selectUser AND loadUserOrders when selected user was never loaded from API', () => {
+      store.overrideSelector(UsersSelectors.selectLoadedUserOrderIds, []);
+      store.refreshState();
+
       facade.selectUser(1);
 
       expect(store.dispatch).toHaveBeenCalledWith(UsersActions.selectUser({ userId: 1 }));
       expect(store.dispatch).toHaveBeenCalledWith(UsersActions.loadUserOrders({ userId: 1 }));
     });
 
-    it('should dispatch ONLY selectUser when $selectedUserOrders has data (Cache Hit)', () => {
-      const mockOrders: Order[] = [{ id: 101, userId: 1, total: 300 }];
-      store.overrideSelector(UsersSelectors.selectSelectedUserOrders, mockOrders);
+    it('should dispatch ONLY selectUser when selected user orders were already loaded from API', () => {
+      store.overrideSelector(UsersSelectors.selectLoadedUserOrderIds, [1]);
       store.refreshState();
 
       facade.selectUser(1);

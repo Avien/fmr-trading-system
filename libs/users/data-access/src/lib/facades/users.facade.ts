@@ -27,6 +27,9 @@ export class UsersFacade {
   readonly $selectedUserOrderSummary: Signal<UserOrderSummary | null> = this.store.selectSignal(
     UsersSelectors.selectUserOrderSummary
   );
+  readonly $loadedUserOrderIds: Signal<number[]> = this.store.selectSignal(
+    UsersSelectors.selectLoadedUserOrderIds
+  );
   readonly $loading: Signal<boolean> = this.store.selectSignal(UsersSelectors.selectLoading);
   readonly $loaded: Signal<boolean> = this.store.selectSignal(UsersSelectors.selectLoaded);
   readonly $error: Signal<string | null> = this.store.selectSignal(UsersSelectors.selectError);
@@ -60,10 +63,10 @@ export class UsersFacade {
   selectUser(userId: number) {
     this.store.dispatch(UsersActions.selectUser({ userId }));
 
-    //Avoid redundant API calls by checking if orders already exist in the store.
-    //If orders are already loaded for the selected user we reuse the cached state.
-    const orders = this.$selectedUserOrders();
-    if (!orders || orders.length === 0) {
+    // Cache hit is based on successful API load for this specific user,
+    // not on whether any WS order happens to be present.
+    const hasLoadedOrdersForUser = this.$loadedUserOrderIds().includes(userId);
+    if (!hasLoadedOrdersForUser) {
       this.store.dispatch(UsersActions.loadUserOrders({ userId }));
     }
   }

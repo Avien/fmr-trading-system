@@ -28,6 +28,8 @@ export const UsersActions = createActionGroup({
     'Delete User Failure': props<{ error: string }>(),
 
     // UI
-    'Select User': props<{ userId: number }>()
+    'Select User': props<{ userId: number }>(),
+
+    ordersUpdatedFromSocket: props<{ order: Order }>()
   }
 });

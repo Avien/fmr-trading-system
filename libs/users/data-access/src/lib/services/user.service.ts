@@ -14,7 +14,6 @@ export class UserService {
   private orders: Order[] = [...MOCK_ORDERS];
 
   getUsers(): Observable<User[]> {
-    throw new Error('Method not implemented.');
     return of([...this.users]).pipe(delay(1500));
   }
 

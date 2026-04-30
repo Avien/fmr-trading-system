@@ -31,6 +31,38 @@ The project focuses on clean architectural boundaries, reactive state management
 
 ---
 
+## 🔔 Order Monitoring Notifications
+
+The dashboard includes a real-time monitoring layer that turns streamed order activity into actionable UI toasts.
+
+### What triggers a notification
+
+- **Warning:** a newly streamed order crosses the high-value threshold (`>= $500`)
+- **Critical:** the same user receives multiple new streamed orders within a short burst window (2 minutes by default)
+- **Noise control:** bulk order inserts (for example, lazy API hydration) are intentionally ignored to avoid toast spam
+
+### Architecture split
+
+- **Pure monitoring rules (`libs/users/utils`)**  
+  `reduceOrderMonitoring()` and related helpers evaluate incoming order snapshots and return lightweight toast payloads.
+- **Facade orchestration (`libs/users/data-access`)**  
+  `UsersFacade` runs the monitoring effect, owns the notifications signal exposed on `$vm`, and keeps store interaction centralized.
+- **Notification mechanics service (`libs/users/data-access/src/lib/services`)**  
+  `OrderNotificationsService` handles notification ids, timestamps, auto-dismiss timers, manual dismiss, and cleanup.
+- **Feature/UI rendering (`libs/users/feature` + `libs/users/ui`)**  
+  Toasts are rendered via `fmr-toast-stack` from `vm.notifications`.
+
+### Try it locally
+
+```bash
+npm run mock:ws
+npm start
+```
+
+Then open the Users dashboard and watch incoming `order-update` events produce warning/critical toasts when conditions are met.
+
+---
+
 ## 🧠 Design Patterns
 
 ### Reactive Facade Pattern

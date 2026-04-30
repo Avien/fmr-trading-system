@@ -3,7 +3,7 @@
 
 A modern, scalable frontend architecture built for the FMR assignment.
 
-**🚀 [Live Demo](https://fmr-trading-system.vercel.app/)**
+**🚀 [Live Demo](https://users-portal-system.vercel.app/)**
 
 ## 📦 Project Overview
 

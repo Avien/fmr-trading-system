@@ -147,7 +147,3 @@ export class UsersFacade {
     return effectRef;
   }
 }
-function addUserFuncFactory(userFacade: UsersFacade) {
-
-  return userFacade.addUser;
-}

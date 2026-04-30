@@ -4,19 +4,28 @@ import { UsersFacade } from './users.facade';
 import { UsersActions } from '../+state/users.actions';
 import { UsersSelectors } from '../+state/users.selectors';
 import { User, Order, UserOrderSummary } from '@fmr/users/utils';
+import { OrderNotificationsService } from '../services/order-notifications.service';
 
 describe('UsersFacade', () => {
   let facade: UsersFacade;
   let store: MockStore;
+  let orderNotifications: { enqueue: jest.Mock; dismiss: jest.Mock; clearAll: jest.Mock };
 
   beforeEach(() => {
+    orderNotifications = {
+      enqueue: jest.fn(),
+      dismiss: jest.fn(),
+      clearAll: jest.fn()
+    };
+
     TestBed.configureTestingModule({
       providers: [
+        { provide: OrderNotificationsService, useValue: orderNotifications },
         UsersFacade,
         provideMockStore({
-          // Initialize ALL selectors used in the Facade to prevent signal initialization errors
           selectors: [
             { selector: UsersSelectors.selectAllUsers, value: [] },
+            { selector: UsersSelectors.selectAllOrders, value: [] },
             { selector: UsersSelectors.selectSelectedUserId, value: null },
             { selector: UsersSelectors.selectSelectedUserOrders, value: [] },
             { selector: UsersSelectors.selectUserOrderSummary, value: null },
@@ -32,7 +41,6 @@ describe('UsersFacade', () => {
     facade = TestBed.inject(UsersFacade);
     store = TestBed.inject(MockStore);
 
-    // Spy on the dispatch method to track actions sent to the store
     jest.spyOn(store, 'dispatch');
   });
 
@@ -42,7 +50,6 @@ describe('UsersFacade', () => {
 
   describe('Signals & ViewModel ($vm)', () => {
     it('should compute $vm correctly based on updated store selectors', () => {
-      // Create mock data
       const mockUsers: User[] = [{ id: 1, name: 'Avi Cohen' }];
       const mockOrders: Order[] = [{ id: 101, userId: 1, total: 500 }];
       const mockSummary: UserOrderSummary = {
@@ -50,8 +57,8 @@ describe('UsersFacade', () => {
         totalAmount: 500
       };
 
-      // Override the store selectors with the mock data, including the new state flags
       store.overrideSelector(UsersSelectors.selectAllUsers, mockUsers);
+      store.overrideSelector(UsersSelectors.selectAllOrders, mockOrders);
       store.overrideSelector(UsersSelectors.selectSelectedUserId, 1);
       store.overrideSelector(UsersSelectors.selectSelectedUserOrders, mockOrders);
       store.overrideSelector(UsersSelectors.selectUserOrderSummary, mockSummary);
@@ -59,10 +66,8 @@ describe('UsersFacade', () => {
       store.overrideSelector(UsersSelectors.selectLoaded, false);
       store.overrideSelector(UsersSelectors.selectError, null);
 
-      // Refresh the store state so the computed signals react to the new values
       store.refreshState();
 
-      // Verify the computed signal evaluates correctly with all new properties
       expect(facade.$vm()).toEqual({
         users: mockUsers,
         selectedUserId: 1,
@@ -70,7 +75,8 @@ describe('UsersFacade', () => {
         orders: mockOrders,
         loading: true,
         loaded: false,
-        error: null
+        error: null,
+        notifications: []
       });
     });
   });
@@ -115,7 +121,6 @@ describe('UsersFacade', () => {
       facade.selectUser(1);
 
       expect(store.dispatch).toHaveBeenCalledWith(UsersActions.selectUser({ userId: 1 }));
-      // Ensure the redundant load action was NOT dispatched
       expect(store.dispatch).not.toHaveBeenCalledWith(UsersActions.loadUserOrders({ userId: 1 }));
     });
   });
@@ -141,6 +146,14 @@ describe('UsersFacade', () => {
     it('should dispatch deleteUser action', () => {
       facade.deleteUser(2);
       expect(store.dispatch).toHaveBeenCalledWith(UsersActions.deleteUser({ userId: 2 }));
+    });
+  });
+
+  describe('dismissOrderNotification', () => {
+    it('should delegate dismiss to OrderNotificationsService', () => {
+      facade.dismissOrderNotification('n-1');
+      expect(orderNotifications.dismiss).toHaveBeenCalledTimes(1);
+      expect(orderNotifications.dismiss.mock.calls[0][1]).toBe('n-1');
     });
   });
 });

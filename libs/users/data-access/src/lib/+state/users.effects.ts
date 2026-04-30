@@ -82,9 +82,9 @@ export class UsersEffects {
     )
   );
 
-  ordersUpdatedFromSocket$ = createEffect(() => {
+  ordersUpdatedFromStream$ = createEffect(() => {
     return this.ordersService.ordersUpdates$.pipe(
-      map((order) => UsersActions.ordersUpdatedFromSocket({ order })),
+      map((order) => UsersActions.ordersUpdatedFromStream({ order })),
       catchError(() => EMPTY)
     );
   });

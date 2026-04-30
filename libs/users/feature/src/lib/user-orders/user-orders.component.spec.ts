@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal, WritableSignal } from '@angular/core';
+import { signal } from '@angular/core';
 import { UserOrdersComponent } from './user-orders.component';
 import { UsersFacade } from '@fmr/users/data-access';
 import { UserOrdersVm } from '@fmr/users/utils';
@@ -7,18 +7,18 @@ import { UserOrdersVm } from '@fmr/users/utils';
 describe('UserOrdersComponent', () => {
   let component: UserOrdersComponent;
   let fixture: ComponentFixture<UserOrdersComponent>;
-  let mockFacade: any;
+  let mockFacade: {
+    loadUsers: jest.Mock;
+    selectUser: jest.Mock;
+    dismissOrderNotification: jest.Mock;
+    $vm: ReturnType<typeof signal<UserOrdersVm>>;
+  };
 
   beforeEach(async () => {
-    // 1. Create a mock Facade
-    // We use WritableSignals so we can easily change the state during tests
     mockFacade = {
       loadUsers: jest.fn(),
       selectUser: jest.fn(),
-
-      // Mocking the Signals
-      $loading: signal(false),
-      $error: signal<string | null>(null),
+      dismissOrderNotification: jest.fn(),
       $vm: signal<UserOrdersVm>({
         users: [],
         selectedUserId: null,
@@ -26,7 +26,8 @@ describe('UserOrdersComponent', () => {
         orders: [],
         loading: false,
         loaded: false,
-        error: null
+        error: null,
+        notifications: []
       })
     };
 

@@ -1,4 +1,8 @@
-@if (facade.$vm(); as vm) {
+@if ($vm(); as vm) {
+  <fmr-toast-stack
+    [notifications]="vm.notifications"
+    (dismissed)="dismissOrderNotification($event)"
+  />
   <section class="shell">
     <header class="page-header">
       <h1>Users orders dashboard</h1>
@@ -45,14 +49,23 @@
         } @else if (vm.loading) {
           <p class="loading-state">Loading orders...</p>
         } @else if (vm.orders.length) {
-          <ul>
-            @for (order of vm.orders; track order.id) {
-              <li>
-                <span>#{{ order.id }}</span>
-                <strong>{{ order.total | number: '1.2-2' }}</strong>
-              </li>
-            }
-          </ul>
+          <cdk-virtual-scroll-viewport
+            class="orders-viewport"
+            role="list"
+            aria-label="Orders"
+            [itemSize]="ordersVirtualRowHeightPx"
+            minBufferPx="200"
+            maxBufferPx="480"
+          >
+            <div
+              *cdkVirtualFor="let order of vm.orders; trackBy: trackByOrderId"
+              class="orders-row"
+              role="listitem"
+            >
+              <span>#{{ order.id }}</span>
+              <strong>{{ order.total | number: '1.2-2' }}</strong>
+            </div>
+          </cdk-virtual-scroll-viewport>
         } @else if (vm.loaded) {
           <p>No orders for this user.</p>
         }

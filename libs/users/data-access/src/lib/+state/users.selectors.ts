@@ -84,6 +84,7 @@ const selectError = createSelector(
 
 export const UsersSelectors = {
   selectAllUsers,
+  selectAllOrders,
   selectSelectedUserId,
   selectLoadedUserOrderIds,
   selectHasLoadedOrdersForUser,

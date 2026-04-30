@@ -30,6 +30,6 @@ export const UsersActions = createActionGroup({
     // UI
     'Select User': props<{ userId: number }>(),
 
-    ordersUpdatedFromSocket: props<{ order: Order }>()
+    ordersUpdatedFromStream: props<{ order: Order }>()
   }
 });

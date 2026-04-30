@@ -1,19 +1,25 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, InjectionToken } from '@angular/core';
 import { filter, Observable, map } from 'rxjs';
 import { webSocket } from 'rxjs/webSocket';
 import { Order } from '@fmr/users/utils';
 
-interface OrderSocketEvent {
+interface OrderStreamEvent {
   type: 'order-update';
   payload: Order;
 }
 
+/** Override in tests or `app.config` when the mock server URL differs. */
+export const ORDERS_SOCKET_URL = new InjectionToken<string>('ORDERS_SOCKET_URL', {
+  factory: () => 'ws://localhost:3000/orders'
+});
+
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
-  private socket$ = webSocket<OrderSocketEvent>('ws://localhost:3000/orders');
+  private readonly url = inject(ORDERS_SOCKET_URL);
+  private stream$ = webSocket<OrderStreamEvent>(this.url);
 
-  public ordersUpdates$: Observable<Order> = this.socket$.pipe(
-    filter((event: OrderSocketEvent) => event.type === 'order-update'),
-    map((event: OrderSocketEvent) => event.payload)
+  public ordersUpdates$: Observable<Order> = this.stream$.pipe(
+    filter((event: OrderStreamEvent) => event.type === 'order-update'),
+    map((event: OrderStreamEvent) => event.payload)
   );
 }

@@ -7,4 +7,6 @@ export * from './lib/models/user-order.summary';
 export * from './lib/models/user.interface';
 export * from './lib/models/users-state.model';
 export * from './lib/models/base-entity-state.interface';
+export * from './lib/models/notification.model';
 export * from './lib/utils/user-orders.utils';
+export * from './lib/utils/order-monitoring.utils';

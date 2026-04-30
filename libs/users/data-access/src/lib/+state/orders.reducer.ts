@@ -67,7 +67,7 @@ export const ordersReducer = createReducer(
     };
   }),
 
-  on(UsersActions.ordersUpdatedFromSocket, (state, { order }) => {
-    return ordersAdapter.addOne(normalizeOrderUserIdFromId(order), state);
+  on(UsersActions.ordersUpdatedFromStream, (state, { order }) => {
+    return ordersAdapter.upsertOne(normalizeOrderUserIdFromId(order), state);
   })
 );

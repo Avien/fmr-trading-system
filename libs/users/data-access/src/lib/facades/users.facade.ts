@@ -1,21 +1,48 @@
-import { computed, inject, Injectable, Signal } from '@angular/core';
+import {
+  computed,
+  DestroyRef,
+  EffectRef,
+  effect,
+  inject,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal
+} from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState, UserOrdersVm, User, Order, UserOrderSummary } from '@fmr/users/utils';
+import {
+  AppState,
+  Notification,
+  UserOrdersVm,
+  User,
+  Order,
+  UserOrderSummary,
+  createOrderMonitoringState,
+  OrderMonitoringState,
+  reduceOrderMonitoring,
+  ORDER_BURST_WINDOW_MS
+} from '@fmr/users/utils';
 import { UsersActions } from '../+state/users.actions';
 import { UsersSelectors } from '../+state/users.selectors';
+import { OrderNotificationsService } from '../services/order-notifications.service';
 
 /**
  * UsersFacade
  *
  * Encapsulates all interaction with the NgRx store and side effects.
- * UI components depend only on Angular Signals exposed via the $vm and remain
- * completely unaware of NgRx implementation details.
- *
- * This keeps components simple, testable, and decoupled from state management.
+ * UI reads only `$vm` (includes `notifications`); NgRx stays behind this facade.
  */
 @Injectable({ providedIn: 'root' })
 export class UsersFacade {
-  private store: Store<AppState> = inject(Store<AppState>);
+  private readonly store: Store<AppState> = inject(Store<AppState>);
+  private readonly destroyRef: DestroyRef = inject(DestroyRef);
+  private readonly orderNotifications: OrderNotificationsService = inject(OrderNotificationsService);
+
+  private orderMonitoringState: OrderMonitoringState = createOrderMonitoringState();
+  private readonly orderMonitoringEffect: EffectRef;
+
+  private readonly $allOrders: Signal<Order[]> = this.store.selectSignal(UsersSelectors.selectAllOrders);
+  private readonly $notifications: WritableSignal<Notification[]> = signal([]);
 
   readonly $users: Signal<User[]> = this.store.selectSignal(UsersSelectors.selectAllUsers);
   readonly $selectedUserId: Signal<number | null> = this.store.selectSignal(
@@ -34,6 +61,7 @@ export class UsersFacade {
   readonly $loaded: Signal<boolean> = this.store.selectSignal(UsersSelectors.selectLoaded);
   readonly $error: Signal<string | null> = this.store.selectSignal(UsersSelectors.selectError);
 
+
   readonly $vm: Signal<UserOrdersVm> = computed<UserOrdersVm>(() => ({
     users: this.$users(),
     selectedUserId: this.$selectedUserId(),
@@ -41,8 +69,14 @@ export class UsersFacade {
     orders: this.$selectedUserOrders(),
     loading: this.$loading(),
     loaded: this.$loaded(),
-    error: this.$error()
+    error: this.$error(),
+    notifications: this.$notifications()
   }));
+
+  constructor() {
+    // `readonly` fields may only be assigned in the constructor body, not inside other methods.
+    this.orderMonitoringEffect = this.setupOrderMonitoringEffect();
+  }
 
   /**
    * Loads users if they are not already present in the store.
@@ -56,6 +90,7 @@ export class UsersFacade {
     }
   }
 
+
   /**
    * Select a user and load their orders if they are not already cached
    * @param userId
@@ -64,14 +99,17 @@ export class UsersFacade {
     this.store.dispatch(UsersActions.selectUser({ userId }));
 
     // Cache hit is based on successful API load for this specific user,
-    // not on whether any WS order happens to be present.
+    // not on whether any streamed order happens to be present.
     const hasLoadedOrdersForUser = this.$loadedUserOrderIds().includes(userId);
     if (!hasLoadedOrdersForUser) {
       this.store.dispatch(UsersActions.loadUserOrders({ userId }));
     }
   }
 
-  //public CRUD apis for future enhancements in the app
+  dismissOrderNotification(id: string): void {
+    this.orderNotifications.dismiss(this.$notifications, id);
+  }
+
   addUser(user: User) {
     this.store.dispatch(UsersActions.addUser({ user }));
   }
@@ -83,4 +121,33 @@ export class UsersFacade {
   deleteUser(userId: number) {
     this.store.dispatch(UsersActions.deleteUser({ userId }));
   }
+
+  private setupOrderMonitoringEffect(): EffectRef {
+    const effectRef = effect(() => {
+      const allOrders = this.$allOrders();
+      const users = this.$users();
+      const { next, toastPayloads } = reduceOrderMonitoring(
+        this.orderMonitoringState,
+        allOrders,
+        users,
+        { now: Date.now(), burstWindowMs: ORDER_BURST_WINDOW_MS }
+      );
+      this.orderMonitoringState = next;
+      for (const payload of toastPayloads) {
+        this.orderNotifications.enqueue(this.$notifications, payload);
+      }
+    });
+
+    this.destroyRef.onDestroy(() => {
+      effectRef.destroy();
+      this.orderMonitoringState = createOrderMonitoringState();
+      this.orderNotifications.clearAll(this.$notifications);
+    });
+
+    return effectRef;
+  }
+}
+function addUserFuncFactory(userFacade: UsersFacade) {
+
+  return userFacade.addUser;
 }

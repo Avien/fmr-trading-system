@@ -1,3 +1,4 @@
+import { Notification } from './notification.model';
 import { Order } from './order.interface';
 import { User } from './user.interface';
 import { UserOrderSummary } from './user-order.summary';
@@ -14,4 +15,5 @@ export interface UserOrdersVm {
   loading: boolean;
   loaded: boolean;
   error: string | null;
+  notifications: Notification[];
 }

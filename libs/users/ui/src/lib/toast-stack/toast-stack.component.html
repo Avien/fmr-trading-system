@@ -1,0 +1,9 @@
+<div class="toast-stack" aria-live="polite" aria-relevant="additions">
+  @for (n of notifications(); track n.id) {
+    <div class="toast" [class.toast--warning]="n.severity === 'warning'" [class.toast--critical]="n.severity === 'critical'">
+      <div class="toast__title">{{ n.severity === 'critical' ? 'Critical' : 'Warning' }}</div>
+      <div class="toast__message">{{ n.message }}</div>
+      <button type="button" class="toast__close" (click)="dismiss(n.id)" aria-label="Dismiss notification">×</button>
+    </div>
+  }
+</div>

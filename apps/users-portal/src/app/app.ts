@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { UserOrdersComponent } from '@fmr/users/feature';
+import { UserTotalOrdersComponent } from '@fmr/users/ui'
 
 @Component({
   selector: 'app-root',
